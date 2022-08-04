@@ -1,0 +1,1 @@
+web: gunicorn diagram_chasing_games.wsgi

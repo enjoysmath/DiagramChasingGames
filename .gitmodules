@@ -1,0 +1,6 @@
+[submodule "quiver"]
+	path = quiver
+	url = https://github.com/enjoysmath/quiver.git
+[submodule "diagram_chasing_games/static/quiver"]
+	path = diagram_chasing_games/static/quiver
+	url = https://github.com/enjoysmath/quiver.git
