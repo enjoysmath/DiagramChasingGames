@@ -507,7 +507,6 @@ class QuiverDiagram(StructuredNode):
         return str(self.name)
     
 
-
 class Diagram(QuiverDiagram):
     given_theorems = RelationshipTo('Theorem', 'GIVEN', cardinality=ZeroOrMore)   
     
