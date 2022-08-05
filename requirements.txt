@@ -2,7 +2,7 @@ django
 gunicorn
 django-heroku
 requests
-git+https://github.com/enjoysmath/neomodel.git@master#egg=neomodel
+git+https://github.com/enjoysmath/neomodel.git@main#egg=neomodel
 django-neomodel
 dj-database-url
 whitenoise
