@@ -1,12 +1,16 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from diagram_chasing_games.http_tools import render_error
+from database.models import Diagram
 
 @login_required
 def diagram_editor(request, diagram_name:str):
-    try:        
+    try: 
+        given_theorems = Diagram.nodes
+        
         context = {
             'diagram_name': diagram_name,
+            'given_theorems': given_theorems,
         }
         return render(request, 'diagram_editor.html', context)
     

@@ -20,6 +20,7 @@ class QuiverArrow(StructuredRel):
     #epic = BooleanProperty(default=False)
     #monic = BooleanProperty(default=False)
     #inclusion = BooleanProperty(default=False)
+    name = StringProperty(max_length=MAX_NAME_LENGTH, required=True)
     diagram_index = IntegerProperty(required=True)
     
     # Strictly style below this line:   
@@ -77,12 +78,7 @@ class QuiverArrow(StructuredRel):
         self.color_alph = f.color_alph
         self.save()
         
-    def load_from_editor(self, format):
-        if len(format) > 2:
-            self.name = format[2]
-        else:
-            self.name = ''   # BUGFIX: need this
-        
+    def load_from_editor(self, format):        
         if len(format) > 3:
             self.alignment = format[3]
         
@@ -170,11 +166,11 @@ class QuiverArrow(StructuredRel):
     
     @property
     def target(self):
-        return QuiverNode.nodes.get_or_none(uid=self.target_uid)
+        return self.end_node()
     
     @property
     def source(self):
-        return QuiverNode.nodes.get_or_none(uid=self.source_uid)
+        return self.start_node()
 
 
 class QuiverNode(StructuredNode):
@@ -230,10 +226,7 @@ class QuiverNode(StructuredNode):
     
     def all_outgoing_arrows(self):
         results, meta = db.cypher_query(
-            f"MATCH (X:QuiverNode)-[r:MAPS_TO]->(:QuiverNode)"
-            f"MATCH (f:QuiverArrow) "
-            f"WHERE X.uid='{self.uid}' AND f.uid=r.uid "
-            f"RETURN f")
+            f'MATCH (x:QuiverNode)-[f:MAPS_TO]->(:QuiverNode) WHERE x.uid="{self.uid}" RETURN f')
         return [QuiverArrow.inflate(row[0]) for row in results]
                     
     def delete(self):
@@ -355,6 +348,8 @@ class QuiverDiagram(StructuredNode):
         format += vertices
         format += edges
         
+        print(edges)
+        
         return format
     
     def load_from_editor(self, format):
@@ -370,7 +365,7 @@ class QuiverDiagram(StructuredNode):
         for k,e in enumerate(edges):
             A = obs[e[0]]
             B = obs[e[1]]
-            f = A.maps_to.connect(B, {'diagram_index': k})
+            f = A.maps_to.connect(B, {'diagram_index': k, 'name': e[2] if len(e) > 2 else ''})
             f.save()
             f.load_from_editor(e)
             A.save()
@@ -507,8 +502,17 @@ class QuiverDiagram(StructuredNode):
         
         return template_regexes, query   
 
+    @property
+    def get_name(self):
+        return str(self.name)
+    
+    
+class Theorem(Object):
+    pass
 
 class Diagram(QuiverDiagram):
+    given_theorems = RelationshipTo('Theorem', 'GIVEN', cardinality=ZeroOrMore)   
+    
     @staticmethod
     def our_create(**kwargs):
         diagram = Diagram(**kwargs).save()
