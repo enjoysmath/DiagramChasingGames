@@ -506,9 +506,7 @@ class QuiverDiagram(StructuredNode):
     def get_name(self):
         return str(self.name)
     
-    
-class Theorem(Object):
-    pass
+
 
 class Diagram(QuiverDiagram):
     given_theorems = RelationshipTo('Theorem', 'GIVEN', cardinality=ZeroOrMore)   
@@ -532,7 +530,10 @@ class Category(StructuredNode):
         return category
 
 class Arrow(QuiverArrow):
-    pass        
+    pass 
+
+class Theorem(Object):
+    pass
 
 class DiagramSet(Object):
     diagrams = RelationshipTo('Diagram', 'CONTAINS', cardinality=OneOrMore)
